@@ -1,24 +1,60 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
-using Azure.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel.ChatCompletion;
-using OpenAI;
 using OpenAI.Chat;
 using System.ClientModel;
-using System.Collections;
+using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
+using OpenAI;
 
-namespace AISemanticKernal;
+namespace AISemanticKernel;
 
-public class SemanticKernelTester
+public class ChatServiceTester
 {
+    private readonly string _endpoint = Environment.GetEnvironmentVariable("AI_OpenAI_Url") ?? throw new ArgumentNullException();
+    private readonly string _apiKey = Environment.GetEnvironmentVariable("AI_OpenAI_ApiKey") ?? throw new ArgumentNullException();
+    private readonly string _model = Environment.GetEnvironmentVariable("AI_OpenAI_Model") ?? throw new ArgumentNullException();
+
     [Test]
-    public void ShouldCallOllamaUsingSemanticKernel()
+    public void ShouldCallAzureChatService()
     {
-        var client = new AzureOpenAIClient(new Uri(Environment.GetEnvironmentVariable("AI_OpenAI_Url")),
-            new ApiKeyCredential(Environment.GetEnvironmentVariable("AI_OpenAI_ApiKey")));
-        var chatClient = client.GetChatClient("gpt-35-turbo");
+        IChatCompletionService chatService = new AzureOpenAIChatCompletionService(
+            _model, _endpoint, _apiKey);
+        var result = chatService.GetChatMessageContentAsync(
+            "what color is the sky?");
+        Console.WriteLine(result.Result);
+    }
+
+    [Test]
+    public void ShouldCallOllamaChatService()
+    {
+        IChatCompletionService chatService = new AzureOpenAIChatCompletionService(
+            _model, _endpoint, _apiKey);
+        var result = chatService.GetChatMessageContentAsync(
+            "what color is the sky?");
+        Console.WriteLine(result.Result);
+    }
+
+    [Test]
+    public void ShouldCallOpenAIUsingSemanticKernel()
+    {
+        var client = new AzureOpenAIClient(new Uri(_endpoint),
+            new ApiKeyCredential(_apiKey));
+        var chatClient = client.GetChatClient(_model);
         var result = chatClient.CompleteChat("What are your first two capabilities? Answer in JSON format");
+        foreach (var part in result.Value.Content)
+        {
+            Console.Write(part.Text);
+        }
+    }
+
+    [Test]
+    public void ShouldCallOpenAIWithShortAnswer()
+    {
+        var client = new AzureOpenAIClient(new Uri(_endpoint),
+            new ApiKeyCredential(_apiKey));
+        var chatClient = client.GetChatClient(_model);
+        var result = chatClient.CompleteChat("What is the color of the sky?");
         foreach (var part in result.Value.Content)
         {
             Console.Write(part.Text);
@@ -34,14 +70,14 @@ public class SemanticKernelTester
         async Task RunAsync()
         {
             // Retrieve the OpenAI endpoint from environment variables
-            var endpoint = Environment.GetEnvironmentVariable("AI_OpenAI_Url");
+            var endpoint = _endpoint;
             if (string.IsNullOrEmpty(endpoint))
             {
                 Console.WriteLine("Please set the AI_OpenAI_Url environment variable.");
                 return;
             }
 
-            var key = Environment.GetEnvironmentVariable("AI_OpenAI_ApiKey");
+            var key = _apiKey;
             if (string.IsNullOrEmpty(key))
             {
                 Console.WriteLine("Please set the AI_OpenAI_ApiKey environment variable.");
@@ -54,7 +90,7 @@ public class SemanticKernelTester
             AzureOpenAIClient azureClient = new(new Uri(endpoint), credential);
 
             // Initialize the ChatClient with the specified deployment name
-            ChatClient chatClient = azureClient.GetChatClient("gpt-35-turbo");
+            ChatClient chatClient = azureClient.GetChatClient(_model);
 
             // Create a list of chat messages
             var messages = new List<ChatMessage>

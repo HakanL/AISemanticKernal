@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
 using ChatRole = OllamaSharp.Models.Chat.ChatRole;
 
-namespace AISemanticKernal
+namespace AISemanticKernel
 {
     public class OllamaApiClientTester
     {

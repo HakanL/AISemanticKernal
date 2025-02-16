@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.35806.103 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISemanticKernal", "AISemanticKernal\AISemanticKernal.csproj", "{2D68DD98-D6AE-42F0-BE02-A5062F4F6826}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISemanticKernel", "AISemanticKernal\AISemanticKernel.csproj", "{2D68DD98-D6AE-42F0-BE02-A5062F4F6826}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
