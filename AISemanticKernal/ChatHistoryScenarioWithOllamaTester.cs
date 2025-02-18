@@ -5,14 +5,14 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace AISemanticKernel;
 
 [TestFixture]
-public class ChatHistoryScenarioTester
+public class ChatHistoryScenarioWithOllamaTester
 {
     private readonly string _endpoint = EnvironmentVariable.AI_Ollama_Url.Get();
     private readonly string _model = EnvironmentVariable.AI_Ollama_Model.Get();
     private readonly IChatCompletionService _chatService;
     private readonly ChatHistory _chatHistory = new ChatHistory();
 
-    public ChatHistoryScenarioTester()
+    public ChatHistoryScenarioWithOllamaTester()
     {
         _chatService = new OllamaChatCompletionService(
             _model, _endpoint, new HttpClient(), null); ;
