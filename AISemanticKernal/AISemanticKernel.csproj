@@ -9,13 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="test.runsettings" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="test.runsettings">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Remove=".runsettings" />
   </ItemGroup>
 
   <ItemGroup>

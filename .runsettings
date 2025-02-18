@@ -1,0 +1,11 @@
+﻿<RunSettings>
+    <RunConfiguration>
+    <EnvironmentVariables>
+    <AI_OpenAI_ApiKey>EOjyVBEPC3QKGBWvaspypLJB3ZpFTJm7chMMm3EUj2g1lkmpp05AJQQJ99BBACLArgHXJ3w3AAABACOGsupv</AI_OpenAI_ApiKey>
+    <AI_OpenAI_Url>https://ai-openai-temp-test.openai.azure.com/</AI_OpenAI_Url>
+    <AI_OpenAI_Model>gpt-4o-mini</AI_OpenAI_Model>
+    <AI_Ollama_Url>http://localhost:11434</AI_Ollama_Url>
+    <AI_Ollama_Model>llama3.2</AI_Ollama_Model>
+    </EnvironmentVariables>
+    </RunConfiguration>
+</RunSettings>
