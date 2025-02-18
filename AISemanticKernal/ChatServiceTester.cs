@@ -11,9 +11,9 @@ namespace AISemanticKernel;
 
 public class ChatServiceTester
 {
-    private readonly string _endpoint = Environment.GetEnvironmentVariable("AI_OpenAI_Url") ?? throw new ArgumentNullException();
-    private readonly string _apiKey = Environment.GetEnvironmentVariable("AI_OpenAI_ApiKey") ?? throw new ArgumentNullException();
-    private readonly string _model = Environment.GetEnvironmentVariable("AI_OpenAI_Model") ?? throw new ArgumentNullException();
+    private readonly string _endpoint = EnvironmentVariable.AI_OpenAI_Url.Get();
+    private readonly string _apiKey = EnvironmentVariable.AI_OpenAI_ApiKey.Get();
+    private readonly string _model = EnvironmentVariable.AI_OpenAI_Model.Get();
 
     [Test]
     public void ShouldCallAzureChatService()
@@ -110,8 +110,7 @@ public class ChatServiceTester
                 PresencePenalty = 0,
             };
 
-            try
-            {
+            
                 // Create the chat completion request
                 ChatCompletion completion = await chatClient.CompleteChatAsync(messages, options);
 
@@ -124,11 +123,7 @@ public class ChatServiceTester
                 {
                     Console.WriteLine("No response received.");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-            }
+            
         }
 
         await RunAsync();

@@ -10,8 +10,8 @@ namespace AISemanticKernel
 {
     public class OllamaApiClientTester
     {
-        private string _endpoint = "http://localhost:11434";
-        private string _model = "llama3.2";
+        private readonly string _endpoint = EnvironmentVariable.AI_Ollama_Url.Get();
+        private readonly string _model = EnvironmentVariable.AI_Ollama_Model.Get();
 
         [Test]
         public void SemanticKernelToOllama()
@@ -25,7 +25,7 @@ namespace AISemanticKernel
         }
 
         [Test]
-        public void ShouldCallLocalLLM()
+        public void ShouldCallLocalLlm()
         {
             var ollamaApiClient = new OllamaApiClient(_endpoint);
             var chatRequest = new ChatRequest
