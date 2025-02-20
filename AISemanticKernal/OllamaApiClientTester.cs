@@ -1,9 +1,11 @@
-﻿using OllamaSharp;
-using OllamaSharp.Models.Chat;
-using System.Threading.Tasks;
-using Codeblaze.SemanticKernel.Connectors.Ollama;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel.ChatCompletion;
+using OllamaSharp;
+using OllamaSharp.Models.Chat;
+using Shouldly;
+using System.Threading.Tasks;
+using Microsoft.SemanticKernel.Connectors.Ollama;
 using ChatRole = OllamaSharp.Models.Chat.ChatRole;
 
 namespace AISemanticKernel
@@ -14,14 +16,16 @@ namespace AISemanticKernel
         private readonly string _model = EnvironmentVariable.AI_Ollama_Model.Get();
 
         [Test]
+        [Experimental("SKEXP0001")]
         public void SemanticKernelToOllama()
         {
-            IChatCompletionService chatService = new OllamaChatCompletionService(
-                _model, _endpoint, new HttpClient(), null);
+            IChatCompletionService chatService =
+                new OllamaApiClient(new Uri(_endpoint), _model).AsChatCompletionService();
 
             var result = chatService.GetChatMessageContentAsync(
                 "what color is the sky during a sunny day? One word answer with no punctuation");
             Console.WriteLine(result.Result);
+            result.Result.ToString().ToLower().ShouldBe("blue");
         }
 
         [Test]
@@ -47,14 +51,16 @@ namespace AISemanticKernel
         }
 
         [Test, Repeat(5), CancelAfter(20000)]
+        [Experimental("SKEXP0001")]
         public void SemanticKernelToOllamaMultiTest()
         {
-            IChatCompletionService chatService = new OllamaChatCompletionService(
-                _model, _endpoint, new HttpClient(), null);
+            IChatCompletionService chatService =
+                new OllamaApiClient(new Uri(_endpoint), _model).AsChatCompletionService();
 
             var result = chatService.GetChatMessageContentAsync(
                 "what color is the sky during a sunny day? One word answer with no punctuation");
             Console.WriteLine(result.Result);
+            result.Result.ToString().ToLower().ShouldBe("blue");
         }
     }
 }

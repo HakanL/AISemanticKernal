@@ -1,8 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using Codeblaze.SemanticKernel.Connectors.Ollama;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Shouldly;
 
 namespace AISemanticKernel;
 
@@ -12,12 +12,13 @@ public class ToolInjectionScenarioTester : LlmTesterBase
     [Test]
     public async Task ShouldRetrieveFromIoc()
     {
-        ChatHistory.AddUserMessage("what is 2+2?");
+        ChatHistory.AddUserMessage("what is 2+2? Respond with the digit and no punctuation");
         IChatCompletionService chatService = ServiceProvider.GetRequiredKeyedService<IChatCompletionService>(ServiceId.Ollama.ToString());
         IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(ChatHistory);
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
+            content2.Content.ShouldBe("4");
         }
         
     }
@@ -30,7 +31,8 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         Kernel kernel = provider.GetRequiredService<Kernel>();
         kernel.ImportPluginFromType<Demographics>();
 
-        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync("How old is Grandpa?", kernel:kernel, 
+        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
+            "How old is Grandpa? Respond with single value with no punctuation", kernel:kernel, 
             executionSettings:new PromptExecutionSettings()
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
@@ -38,6 +40,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
+            content2.Content.ShouldBe("80");
         }
 
         
@@ -53,7 +56,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         kernel.ImportPluginFromType<Demographics>();
 
         IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
-            "How old is Grandpa?", kernel: kernel,
+            "How old is Grandpa? Respond with single value with no punctuation", kernel: kernel,
             executionSettings: new PromptExecutionSettings()
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
@@ -61,6 +64,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
+            content2.Content.ShouldBe("80");
         }
 
 

@@ -2,11 +2,11 @@
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
 using System.ClientModel;
-using Codeblaze.SemanticKernel.Connectors.Ollama;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI;
+using Shouldly;
 
 namespace AISemanticKernel;
 
@@ -22,8 +22,9 @@ public class ChatServiceTester
         IChatCompletionService chatService = new AzureOpenAIChatCompletionService(
             _model, _endpoint, _apiKey);
         var result = chatService.GetChatMessageContentAsync(
-            "what color is the sky?");
+            "what color is the sky during the day when there are no clouds? Single word, no punctuation");
         Console.WriteLine(result.Result);
+        result.Result.ToString().ToLower().ShouldBe("blue");
     }
 
     [Test]
@@ -45,7 +46,7 @@ public class ChatServiceTester
         var client = new AzureOpenAIClient(new Uri(_endpoint),
             new ApiKeyCredential(_apiKey));
         var chatClient = client.GetChatClient(_model);
-        var result = chatClient.CompleteChat("What is the color of the sky?");
+        var result = chatClient.CompleteChat("What are your first two capabilities? Answer in JSON format");
         foreach (var part in result.Value.Content)
         {
             Console.Write(part.Text);

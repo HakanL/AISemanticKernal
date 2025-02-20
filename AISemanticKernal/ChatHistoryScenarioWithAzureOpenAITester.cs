@@ -1,5 +1,4 @@
-﻿using Codeblaze.SemanticKernel.Connectors.Ollama;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Shouldly;
@@ -30,7 +29,8 @@ public class ChatHistoryScenarioWithAzureOpenAITester
     public async Task ShouldRememberHistoryOfChat(string prompt, string? expected = null, bool shouldAssert = false)
     {
         _chatHistory.AddUserMessage(prompt);
-        IReadOnlyList<ChatMessageContent> result = await _chatService.GetChatMessageContentsAsync(_chatHistory);
+        IReadOnlyList<ChatMessageContent> result = await _chatService
+            .GetChatMessageContentsAsync(_chatHistory);
 
         if (shouldAssert)
         {
