@@ -2,6 +2,7 @@
 using Azure.AI.OpenAI;
 using OpenAI.Chat;
 using System.ClientModel;
+using Codeblaze.SemanticKernel.Connectors.Ollama;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
@@ -17,16 +18,6 @@ public class ChatServiceTester
 
     [Test]
     public void ShouldCallAzureChatService()
-    {
-        IChatCompletionService chatService = new AzureOpenAIChatCompletionService(
-            _model, _endpoint, _apiKey);
-        var result = chatService.GetChatMessageContentAsync(
-            "what color is the sky?");
-        Console.WriteLine(result.Result);
-    }
-
-    [Test]
-    public void ShouldCallOllamaChatService()
     {
         IChatCompletionService chatService = new AzureOpenAIChatCompletionService(
             _model, _endpoint, _apiKey);
@@ -64,8 +55,6 @@ public class ChatServiceTester
     [Test]
     public async Task AzureCodeTest()
     {
-
-        // Install the .NET library via NuGet: dotnet add package Azure.AI.OpenAI --prerelease
 
         async Task RunAsync()
         {

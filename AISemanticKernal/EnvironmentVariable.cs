@@ -18,6 +18,8 @@ public static class EnvironmentVariableExtensions
         {
             throw new ArgumentNullException(variable.ToString());
         }
+
+        Console.WriteLine($"{variable.ToString()}:{value}");
         return value;
     }
 }
