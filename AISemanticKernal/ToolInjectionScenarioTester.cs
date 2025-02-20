@@ -23,7 +23,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
     }
 
     [Test]
-    public async Task ShouldCallKernelTool()
+    public async Task ShouldCallKernelToolUsingAzureOpenAI()
     {
         ServiceProvider provider = ServiceProvider;
         var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(ServiceId.AzureOpenId.ToString());
@@ -41,6 +41,29 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         }
 
         
+    }
+
+    [Test]
+    public async Task ShouldCallKernelToolUsingOllama()
+    {
+        ServiceProvider provider = ServiceProvider;
+        var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(
+            ServiceId.Ollama.ToString());
+        Kernel kernel = provider.GetRequiredService<Kernel>();
+        kernel.ImportPluginFromType<Demographics>();
+
+        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
+            "How old is Grandpa?", kernel: kernel,
+            executionSettings: new PromptExecutionSettings()
+            {
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            });
+        foreach (ChatMessageContent content2 in result)
+        {
+            Console.WriteLine(content2.Content);
+        }
+
+
     }
 
     public class Demographics    

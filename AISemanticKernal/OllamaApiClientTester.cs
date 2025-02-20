@@ -42,7 +42,7 @@ namespace AISemanticKernel
 
             foreach (var message in chatResponse.ToBlockingEnumerable())
             {
-                Console.Write(message.Message.Content);
+                Console.Write(message!.Message.Content);
             }
         }
 
