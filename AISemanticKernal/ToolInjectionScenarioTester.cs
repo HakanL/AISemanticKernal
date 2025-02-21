@@ -40,7 +40,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
-            content2.Content.ShouldBe("80");
+            content2.Content.ShouldBe("81");
         }
 
         
@@ -64,7 +64,31 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
-            content2.Content.ShouldBe("80");
+            content2.Content.ShouldBe("81");
+        }
+
+
+    }
+
+    [Test]
+    public async Task ShouldCallKernelToolTwiceUsingOllama()
+    {
+        ServiceProvider provider = ServiceProvider;
+        var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(
+            ServiceId.Ollama.ToString());
+        Kernel kernel = provider.GetRequiredService<Kernel>();
+        kernel.ImportPluginFromType<Demographics>();
+
+        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
+            "Is Grandpa's age older than Liana's age? Single word response, no punctuation", kernel: kernel,
+            executionSettings: new PromptExecutionSettings()
+            {
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+            });
+        foreach (ChatMessageContent content2 in result)
+        {
+            Console.WriteLine(content2.Content);
+            content2.Content.ToLower().ShouldBe("yes");
         }
 
 
@@ -79,7 +103,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
             {
                 "Jeffrey" => 45,
                 "Liana" => 46,
-                "Grandpa" => 80,
+                "Grandpa" => 81,
                 _ => 0
             };
         }

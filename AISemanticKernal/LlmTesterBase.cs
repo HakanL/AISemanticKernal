@@ -21,6 +21,7 @@ public class LlmTesterBase
     public LlmTesterBase()
     {
         ServiceCollection ioc = new ServiceCollection();
+        ioc.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace));
         // ioc.AddOllamaAIChatCompletion(OllamaModel, OllamaEndpoint, ServiceId.Ollama.ToString());
 #pragma warning disable SKEXP0070
         ioc.AddOllamaChatCompletion(OllamaModel, new Uri(OllamaEndpoint), ServiceId.Ollama.ToString());
