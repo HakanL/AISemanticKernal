@@ -7,7 +7,7 @@ using Shouldly;
 namespace AISemanticKernel;
 
 [TestFixture]
-public class ToolInjectionScenarioTester : LlmTesterBase
+public partial class ToolInjectionScenarioTester : LlmTesterBase
 {
     [Test]
     public async Task ShouldRetrieveFromIoc()
@@ -29,7 +29,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         ServiceProvider provider = ServiceProvider;
         var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(ServiceId.AzureOpenId.ToString());
         Kernel kernel = provider.GetRequiredService<Kernel>();
-        kernel.ImportPluginFromType<Demographics>();
+        kernel.ImportPluginFromType<DemographicsKernelFunction>();
 
         IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
             "How old is Grandpa? Respond with single value with no punctuation", kernel:kernel, 
@@ -43,7 +43,6 @@ public class ToolInjectionScenarioTester : LlmTesterBase
             content2.Content.ShouldBe("81");
         }
 
-        
     }
 
     [Test]
@@ -53,7 +52,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(
             ServiceId.Ollama.ToString());
         Kernel kernel = provider.GetRequiredService<Kernel>();
-        kernel.ImportPluginFromType<Demographics>();
+        kernel.ImportPluginFromType<DemographicsKernelFunction>();
 
         IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
             "How old is Grandpa? Respond with single value with no punctuation", kernel: kernel,
@@ -77,7 +76,7 @@ public class ToolInjectionScenarioTester : LlmTesterBase
         var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(
             ServiceId.Ollama.ToString());
         Kernel kernel = provider.GetRequiredService<Kernel>();
-        kernel.ImportPluginFromType<Demographics>();
+        kernel.ImportPluginFromType<DemographicsKernelFunction>();
 
         IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
             "Is Grandpa's age older than Liana's age? Single word response, no punctuation", kernel: kernel,
@@ -94,20 +93,31 @@ public class ToolInjectionScenarioTester : LlmTesterBase
 
     }
 
-    public class Demographics    
+    [Test]
+    public async Task ShouldNotCallKernelToolBecauseOfFilterUsingOllama()
     {
-        [KernelFunction]
-        public int GetPersonAge(string name)
-        {
-            return name switch
+        Ioc.AddTransient<IFunctionInvocationFilter, DemographicsInvocationFilter>();
+        ServiceProvider provider = ServiceProvider;
+        var chatService = provider.GetRequiredKeyedService<IChatCompletionService>(
+            ServiceId.Ollama.ToString());
+        Kernel kernel = provider.GetRequiredService<Kernel>();
+        kernel.ImportPluginFromType<DemographicsKernelFunction>();
+
+        var history = new ChatHistory();
+        history.AddSystemMessage("Respond with a single word");
+        history.AddUserMessage("What is Grandpa's age? Respond with a single word");
+        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
+            history, kernel: kernel,
+            executionSettings: new PromptExecutionSettings()
             {
-                "Jeffrey" => 45,
-                "Liana" => 46,
-                "Grandpa" => 81,
-                _ => 0
-            };
+                FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            });
+        foreach (ChatMessageContent content2 in result)
+        {
+            Console.WriteLine(content2.Content);
+            content2.Content.ToLower().ShouldNotContain("81");
         }
+
+
     }
-
-
 }

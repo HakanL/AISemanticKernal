@@ -12,24 +12,22 @@ public class LlmTesterBase
     protected readonly string OllamaEndpoint = EnvironmentVariable.AI_Ollama_Url.Get();
     protected readonly string OllamaModel = EnvironmentVariable.AI_Ollama_Model.Get();
     protected readonly ChatHistory ChatHistory = new ChatHistory();
-    protected ServiceProvider ServiceProvider;
+    protected ServiceProvider ServiceProvider => Ioc.BuildServiceProvider();
 
     protected readonly string AzureOpenIdEndpoint = EnvironmentVariable.AI_OpenAI_Url.Get();
     protected readonly string AzureOpenIdModel = EnvironmentVariable.AI_OpenAI_Model.Get();
     protected readonly string AzureOpenIdApiKey = EnvironmentVariable.AI_OpenAI_ApiKey.Get();
-    
+    protected readonly ServiceCollection Ioc = [];
+
     public LlmTesterBase()
     {
-        ServiceCollection ioc = new ServiceCollection();
-        ioc.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace));
+        Ioc.AddLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Trace));
         // ioc.AddOllamaAIChatCompletion(OllamaModel, OllamaEndpoint, ServiceId.Ollama.ToString());
 #pragma warning disable SKEXP0070
-        ioc.AddOllamaChatCompletion(OllamaModel, new Uri(OllamaEndpoint), ServiceId.Ollama.ToString());
+        Ioc.AddOllamaChatCompletion(OllamaModel, new Uri(OllamaEndpoint), ServiceId.Ollama.ToString());
 #pragma warning restore SKEXP0070
-        ioc.AddAzureOpenAIChatCompletion(AzureOpenIdModel, AzureOpenIdEndpoint, AzureOpenIdApiKey, ServiceId.AzureOpenId.ToString());
-        ioc.AddKernel();
-
-        ServiceProvider = ioc.BuildServiceProvider();
+        Ioc.AddAzureOpenAIChatCompletion(AzureOpenIdModel, AzureOpenIdEndpoint, AzureOpenIdApiKey, ServiceId.AzureOpenId.ToString());
+        Ioc.AddKernel();
 
         ChatHistory.AddSystemMessage("Only respond to the user with single word answers.");
     }
