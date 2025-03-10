@@ -11,13 +11,21 @@ public class LlmTesterBase
 {
     protected readonly string OllamaEndpoint = EnvironmentVariable.AI_Ollama_Url.Get();
     protected readonly string OllamaModel = EnvironmentVariable.AI_Ollama_Model.Get();
-    protected readonly ChatHistory ChatHistory = new ChatHistory();
     protected ServiceProvider ServiceProvider => Ioc.BuildServiceProvider();
 
     protected readonly string AzureOpenIdEndpoint = EnvironmentVariable.AI_OpenAI_Url.Get();
     protected readonly string AzureOpenIdModel = EnvironmentVariable.AI_OpenAI_Model.Get();
     protected readonly string AzureOpenIdApiKey = EnvironmentVariable.AI_OpenAI_ApiKey.Get();
     protected readonly ServiceCollection Ioc = [];
+
+    protected ChatHistory GetChatHistory()
+    {
+        var newChatHistory = new ChatHistory();
+
+        newChatHistory.AddSystemMessage("Only respond to the user with single word answers.");
+
+        return newChatHistory;
+    }
 
     public LlmTesterBase()
     {
@@ -28,8 +36,6 @@ public class LlmTesterBase
 #pragma warning restore SKEXP0070
         Ioc.AddAzureOpenAIChatCompletion(AzureOpenIdModel, AzureOpenIdEndpoint, AzureOpenIdApiKey, ServiceId.AzureOpenId.ToString());
         Ioc.AddKernel();
-
-        ChatHistory.AddSystemMessage("Only respond to the user with single word answers.");
     }
 }
 

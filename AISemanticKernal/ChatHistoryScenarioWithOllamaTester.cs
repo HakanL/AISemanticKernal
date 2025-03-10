@@ -15,10 +15,11 @@ public class ChatHistoryScenarioWithOllamaTester : LlmTesterBase
     [TestCase("How old is Jeffrey's wife?", "46", true)]
     public async Task ShouldRememberHistoryOfChat(string prompt, string? expected = null, bool shouldAssert = false)
     {
-        ChatHistory.AddUserMessage(prompt);
+        var chatHistory = GetChatHistory();
+        chatHistory.AddUserMessage(prompt);
         IReadOnlyList<ChatMessageContent> result = await ServiceProvider
             .GetRequiredKeyedService<IChatCompletionService>(ServiceId.Ollama.ToString())
-            .GetChatMessageContentsAsync(ChatHistory);
+            .GetChatMessageContentsAsync(chatHistory);
 
         if (shouldAssert)
         {

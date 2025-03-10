@@ -12,9 +12,10 @@ public partial class ToolInjectionScenarioTester : LlmTesterBase
     [Test]
     public async Task ShouldRetrieveFromIoc()
     {
-        ChatHistory.AddUserMessage("what is 2+2? Respond with the digit and no punctuation");
+        var chatHistory = GetChatHistory();
+        chatHistory.AddUserMessage("what is 2+2? Respond with the digit and no punctuation");
         IChatCompletionService chatService = ServiceProvider.GetRequiredKeyedService<IChatCompletionService>(ServiceId.Ollama.ToString());
-        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(ChatHistory);
+        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(chatHistory);
         foreach (ChatMessageContent content2 in result)
         {
             Console.WriteLine(content2.Content);
@@ -78,8 +79,11 @@ public partial class ToolInjectionScenarioTester : LlmTesterBase
         Kernel kernel = provider.GetRequiredService<Kernel>();
         kernel.ImportPluginFromType<DemographicsKernelFunction>();
 
-        IReadOnlyList<ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
-            "Is Grandpa's age older than Liana's age? Single word response, no punctuation", kernel: kernel,
+        var chatHistory = GetChatHistory();
+        chatHistory.AddUserMessage("Is Grandpa's age older than Liana's age?");
+
+        IReadOnlyList <ChatMessageContent> result = await chatService.GetChatMessageContentsAsync(
+            chatHistory, kernel: kernel,
             executionSettings: new PromptExecutionSettings()
             {
                 FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
